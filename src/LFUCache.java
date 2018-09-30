@@ -1,5 +1,3 @@
-package Mirage.LeetCodeSolution;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
