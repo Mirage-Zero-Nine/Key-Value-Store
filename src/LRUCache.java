@@ -11,7 +11,7 @@ public class LRUCache {
     private Node head;
     private Node end;
     private int c = 0;      // count total cache size
-    private HashMap<Integer, Node> cache = new HashMap<>();
+    private HashMap<String, Node> cache = new HashMap<>();
 
     /**
      * Structure of cache:
@@ -34,15 +34,15 @@ public class LRUCache {
     }
 
     /**
-     * <code>get</code> operation. Return -1 if key is not found in cache.
+     * <code>get</code> operation. Return null if key is not found in cache.
      *
      * @param key requesting key
-     * @return corresponding value, or -1.
+     * @return corresponding value, or null.
      */
-    public int get(int key) {
+    public String get(String key) {
         Node temp = cache.get(key);
         if (temp == null) {
-            return -1;
+            return null;
         }
         lastUsed(temp);
         return temp.val;
@@ -55,7 +55,7 @@ public class LRUCache {
      * @param key   new key
      * @param value new value
      */
-    public void put(int key, int value) {
+    public void put(String key, String value) {
 
         Node node = cache.get(key);
 
@@ -125,21 +125,6 @@ public class LRUCache {
         removeNode(old);
         return old;
     }
-
-    public static void main(String[] args) {
-        LRUCache testCache = new LRUCache(2);
-
-        testCache.put(1, 1);
-        testCache.put(2, 2);
-        System.out.println(testCache.get(1));
-        testCache.put(3, 3);
-        System.out.println(testCache.get(2));
-        testCache.put(4, 4);
-        System.out.println(testCache.get(1));
-        System.out.println(testCache.get(3));
-        System.out.println(testCache.get(4));
-        System.out.println(testCache);
-    }
 }
 
 /**
@@ -147,8 +132,8 @@ public class LRUCache {
  * Worked as double linked list.
  */
 class Node {
-    int key;
-    int val;
+    String key;
+    String val;
     Node previous;
     Node next;
 }

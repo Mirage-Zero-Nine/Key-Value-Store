@@ -4,7 +4,6 @@ import java.net.Socket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * @author BorisMirage
@@ -15,12 +14,12 @@ import java.util.HashMap;
 class BinaryServerThread implements Runnable {
 
     private Socket sock;
-    private HashMap<String, String> store;
+    private LRUCache store;
     private int protocol = 0;       // Default TCP
 
-    public BinaryServerThread(Socket s, HashMap<String, String> stringHashMap, int protocol) {
+    public BinaryServerThread(Socket s, LRUCache cache, int protocol) {
         this.sock = s;
-        store = stringHashMap;
+        store = cache;
         this.protocol = protocol;
     }
 
@@ -125,7 +124,7 @@ class BinaryServerThread implements Runnable {
             if (arr[0].equals("get")) {
                 for (int i = 1; i < arr.length; i++) {
                     key = arr[i];
-                    if (store.containsKey(key)) {
+                    if (store.get(key) != null) {
                         outPrintWriter.println(String.format("Server: GET [%s] - [%s] ", key, store.get(key)));
                     } else {
                         outPrintWriter.println(String.format("Server: [%s] is not found in server! ", key));
@@ -178,7 +177,7 @@ class BinaryServerThread implements Runnable {
         String m;
         String v;
         Message getResponse = new Message(false, true, "get");
-        if (store.containsKey(k)) {
+        if (store.get(k) != null) {
 
             /* If key found in server */
             v = store.get(k);
@@ -216,7 +215,7 @@ class BinaryServerThread implements Runnable {
     private void set(String k, String v, DataOutputStream out, BinaryCoder outEncoder) {
         String m;
         Message setResponse = new Message(false, true, "set");
-        if (store.containsKey(k)) {
+        if (store.get(k) != null) {
 
             /* If duplicate key was found in hash map */
             m = String.format("Duplicate key [%s] found in server. Rewrite to [%s]", k, v);
@@ -261,7 +260,9 @@ class BinaryServerThread implements Runnable {
 public class Server {
 
     public Server() {
-        HashMap<String, String> store = new HashMap<>();        // Same map that sharing to both ASCII and binary client
+        int cacheCapacity = 1000;
+        LRUCache cache = new LRUCache(cacheCapacity);
+//        HashMap<String, String> store = new HashMap<>();        // Same map that sharing to both ASCII and binary client
         ServerSocket binarySocket = null;
 
         boolean listening = true;
@@ -293,7 +294,7 @@ public class Server {
             try {
 
                 // wait for a connection
-                BinaryServerThread binary = new BinaryServerThread(binarySocket.accept(), store, 0);
+                BinaryServerThread binary = new BinaryServerThread(binarySocket.accept(), cache, 0);
 
                 // start a new thread to handle the connection
                 Thread binaryThread = new Thread(binary);
