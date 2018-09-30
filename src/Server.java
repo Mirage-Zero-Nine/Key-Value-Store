@@ -132,7 +132,7 @@ class BinaryServerThread implements Runnable {
                 }
             }
             if (arr[0].equals("stats")) {
-                outPrintWriter.println("Server: " + store);
+                outPrintWriter.println("Server: " + store.stats());
                 outPrintWriter.flush();
             }
 
@@ -151,10 +151,10 @@ class BinaryServerThread implements Runnable {
      * @param out socket output PrintWriter
      */
     private void stats(DataOutputStream out, BinaryCoder outEncoder) {
-        System.out.println("STATS: " + store);
+        System.out.println("STATS: " + store.stats());
 
         Message statsResponse = new Message(false, true, "stats");
-        statsResponse.setVal("STATS: " + store);
+        statsResponse.setVal("STATS: " + store.stats());
         statsResponse.setKey(" ");
         try {
             byte[] responseBytes = outEncoder.toBinary(statsResponse);

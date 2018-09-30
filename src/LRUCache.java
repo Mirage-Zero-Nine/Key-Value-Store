@@ -79,6 +79,10 @@ public class LRUCache {
         }
     }
 
+    public String stats() {
+        return String.valueOf(cache.size());
+    }
+
     /**
      * Remove given Node.
      *
